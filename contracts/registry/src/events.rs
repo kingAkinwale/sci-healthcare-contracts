@@ -3,9 +3,9 @@
 //! Field names here are part of the protocol's public interface: the
 //! indexer decodes these by name. Renaming a field is a breaking change.
 
-use soroban_sdk::{contractevent, Address, String};
+use soroban_sdk::{contractevent, Address, BytesN, String};
 
-use crate::types::ProviderStatus;
+use crate::types::{ProviderCategory, ProviderStatus};
 
 #[contractevent]
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -21,6 +21,15 @@ pub struct ProviderRegistered {
     pub name: String,
     pub country: String,
     pub registered_at: u64,
+    pub category: ProviderCategory,
+}
+
+#[contractevent]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ProviderCategoryChanged {
+    #[topic]
+    pub provider: Address,
+    pub category: ProviderCategory,
 }
 
 #[contractevent]
@@ -29,6 +38,16 @@ pub struct ProviderStatusChanged {
     #[topic]
     pub provider: Address,
     pub status: ProviderStatus,
+    /// Why the status changed, as documented in `docs/protocol/trust.md`.
+    pub reason_code: u32,
+}
+
+#[contractevent]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct VerificationEvidenceSet {
+    #[topic]
+    pub provider: Address,
+    pub evidence_hash: BytesN<32>,
 }
 
 #[contractevent]
